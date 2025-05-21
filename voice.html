@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scan Uang TTS Demo</title>
+</head>
+<body>
+  <h2>Demo Text-to-Speech Nominal Uang</h2>
+
+  <button id="speakBtn">Putar Suara Nominal</button>
+
+  <script>
+    // Fungsi konversi nominal Rp ke kata (simple)
+    function convertNominalToWords(rpString) {
+      const nominal = parseInt(rpString.replace(/[Rp.\s]/g, ''));
+      switch (nominal) {
+        case 1000000: return "Satu juta rupiah";
+        case 500000: return "Lima ratus ribu rupiah";
+        case 200000: return "Dua ratus ribu rupiah";
+        case 100000: return "Seratus ribu rupiah";
+        case 50000: return "Lima puluh ribu rupiah";
+        case 20000: return "Dua puluh ribu rupiah";
+        case 10000: return "Sepuluh ribu rupiah";
+        case 5000: return "Lima ribu rupiah";
+        default: return "Nominal tidak dikenal";
+      }
+    }
+
+    // Fungsi text to speech
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        const voices = window.speechSynthesis.getVoices();
+        utterance.voice = voices.find(voice => voice.lang === 'id-ID' && voice.name.includes('Indonesia')) || voices[3];
+        utterance.lang = 'id-ID';
+        utterance.pitch = 1.0; // Nada lebih tinggi
+        utterance.rate = 0.7;  // Kecepatan lebih lambat
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert('Browser kamu tidak mendukung fitur suara');
+      }
+    }
+
+    // Contoh hasil scan dari backend (bisa diganti dengan fetch API)
+    const backendScanResult = "Rp 1000000";
+
+    document.getElementById('speakBtn').addEventListener('click', () => {
+      const textToSpeak = convertNominalToWords(backendScanResult);
+      speakText(textToSpeak);
+    });
+    window.speechSynthesis.onvoiceschanged = () => {
+  console.log(window.speechSynthesis.getVoices());
+};
+
+window.speechSynthesis.onvoiceschanged = () => {
+  const voices = window.speechSynthesis.getVoices();
+  console.log(voices);
+};
+  </script>
+</body>
+</html>
